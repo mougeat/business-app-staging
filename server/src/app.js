@@ -4,6 +4,7 @@ require('dotenv').config();
 const initDB = require('./db/init');
 
 const authRoutes = require('./routes/auth');
+const companyRoutes = require('./routes/companies');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,6 +17,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/companies', companyRoutes);
 
 initDB().then(() => {
   app.listen(PORT, () => {
