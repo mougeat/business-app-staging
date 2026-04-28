@@ -6,6 +6,7 @@ const initDB = require('./db/init');
 const authRoutes = require('./routes/auth');
 const companyRoutes = require('./routes/companies');
 const contactRoutes = require('./routes/contacts');
+const communicationRoutes = require('./routes/communications');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +21,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/communications', communicationRoutes);
 
 initDB().then(() => {
   app.listen(PORT, () => {
