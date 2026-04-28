@@ -7,6 +7,9 @@ const authRoutes = require('./routes/auth');
 const companyRoutes = require('./routes/companies');
 const contactRoutes = require('./routes/contacts');
 const communicationRoutes = require('./routes/communications');
+const proposalRoutes = require('./routes/proposals');
+const purchaseRoutes = require('./routes/purchases');
+const projectRoutes = require('./routes/projects');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +25,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/communications', communicationRoutes);
+app.use('/api/proposals', proposalRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/projects', projectRoutes);
 
 initDB().then(() => {
   app.listen(PORT, () => {
