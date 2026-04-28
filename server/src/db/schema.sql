@@ -1,0 +1,69 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS tenants (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name        VARCHAR(200) NOT NULL,
+    slug        VARCHAR(100) UNIQUE NOT NULL,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TYPE IF NOT EXISTS user_role AS ENUM ('admin', 'sales', 'purchasing', 'readonly');
+
+CREATE TABLE IF NOT EXISTS users (
+    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id     UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    email         VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    first_name    VARCHAR(100),
+    last_name     VARCHAR(100),
+    role          user_role NOT NULL DEFAULT 'sales',
+    is_active     BOOLEAN DEFAULT TRUE,
+    last_login    TIMESTAMPTZ,
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS companies (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    name        VARCHAR(200) NOT NULL,
+    industry    VARCHAR(100),
+    website     VARCHAR(255),
+    address     TEXT,
+    city        VARCHAR(100),
+    country     VARCHAR(100),
+    notes       TEXT,
+    created_by  UUID REFERENCES users(id),
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS contacts (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    company_id  UUID REFERENCES companies(id) ON DELETE SET NULL,
+    first_name  VARCHAR(100) NOT NULL,
+    last_name   VARCHAR(100),
+    role        VARCHAR(100),
+    email       VARCHAR(255),
+    phone       VARCHAR(50),
+    whatsapp    VARCHAR(50),
+    notes       TEXT,
+    created_by  UUID REFERENCES users(id),
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS communications (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    type        VARCHAR(50) NOT NULL,
+    subject     VARCHAR(255),
+    body        TEXT,
+    comm_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    company_id  UUID REFERENCES companies(id) ON DELETE CASCADE,
+    contact_id  UUID REFERENCES contacts(id) ON DELETE CASCADE,
+    created_by  UUID REFERENCES users(id),
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);
