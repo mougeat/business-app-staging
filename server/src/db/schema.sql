@@ -1,5 +1,15 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('admin', 'sales', 'purchasing', 'readonly');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE comm_type AS ENUM ('meeting', 'phone_call', 'email', 'whatsapp', 'sms', 'note');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
 CREATE TABLE IF NOT EXISTS tenants (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(200) NOT NULL,
@@ -7,8 +17,6 @@ CREATE TABLE IF NOT EXISTS tenants (
     created_at  TIMESTAMPTZ DEFAULT NOW(),
     updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
-
-CREATE TYPE IF NOT EXISTS user_role AS ENUM ('admin', 'sales', 'purchasing', 'readonly');
 
 CREATE TABLE IF NOT EXISTS users (
     id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -58,7 +66,7 @@ CREATE TABLE IF NOT EXISTS contacts (
 CREATE TABLE IF NOT EXISTS communications (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    type        VARCHAR(50) NOT NULL,
+    type        comm_type NOT NULL,
     subject     VARCHAR(255),
     body        TEXT,
     comm_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
