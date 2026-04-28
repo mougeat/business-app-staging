@@ -3,6 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 const initDB = require('./db/init');
 
+const authRoutes = require('./routes/auth');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -12,6 +14,8 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Business App API is running 🚀' });
 });
+
+app.use('/api/auth', authRoutes);
 
 initDB().then(() => {
   app.listen(PORT, () => {
