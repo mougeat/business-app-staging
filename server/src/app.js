@@ -13,7 +13,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Business App API is running 🚀' });
 });
 
-// Init DB then start server
 initDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
