@@ -75,3 +75,24 @@ CREATE TABLE IF NOT EXISTS communications (
     created_by  UUID REFERENCES users(id),
     created_at  TIMESTAMPTZ DEFAULT NOW()
 );
+-- Plusieurs contacts par communication
+CREATE TABLE IF NOT EXISTS communication_contacts (
+    communication_id  UUID NOT NULL REFERENCES communications(id) ON DELETE CASCADE,
+    contact_id        UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+    PRIMARY KEY (communication_id, contact_id)
+);
+
+-- Plusieurs liens par communication (projets, proposals, PO)
+CREATE TABLE IF NOT EXISTS communication_links (
+    id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    communication_id  UUID NOT NULL REFERENCES communications(id) ON DELETE CASCADE,
+    proposal_id       UUID REFERENCES proposals(id) ON DELETE CASCADE,
+    po_id             UUID REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    project_id        UUID REFERENCES projects(id) ON DELETE CASCADE
+);
+
+-- Ajouter next_action à communications
+ALTER TABLE communications 
+  ADD COLUMN IF NOT EXISTS next_action TEXT,
+  ADD COLUMN IF NOT EXISTS next_action_date DATE,
+  ADD COLUMN IF NOT EXISTS duration_minutes INTEGER;
